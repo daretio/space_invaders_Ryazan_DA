@@ -67,7 +67,8 @@ def enemy_create():
 def model_update():
     palayer_model()
     bullet_model()
-    enemy_model()
+    state = enemy_model()
+    return state
 
 def palayer_model():
     x = 7   # создание переменной и ее инициализация
@@ -97,11 +98,13 @@ def bullet_create():
 def enemy_model():
     """ Изменение положения противника, рассчет поражений."""
     global enemy_y, enemy_x, bullet_alive
+    state = True
 
     enemy_x += enemy_dx
     enemy_y += enemy_dy
-    if enemy_y > screen_height:
+    if enemy_y > (screen_height - 50):
         enemy_create()
+        state = False
 
     # пересечение с пулей
     if bullet_alive:
@@ -113,6 +116,7 @@ def enemy_model():
             print('BANG!')
             enemy_create()
             bullet_alive = False
+    return state
 
 def display_redraw():
     display.blit(bg_img, (0, 0))
@@ -158,8 +162,11 @@ def event_processing():
 enemy_create()
 running = True
 while running:
-    model_update()
+    state = model_update()
     display_redraw()
-    running = event_processing()
+    if state:
+        running = event_processing()
+    else:
+        running = False
 
 pg.quit()
